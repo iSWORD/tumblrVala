@@ -37,11 +37,11 @@ namespace TumblrAPI {
 		 * @param string $token          oauth token
 		 * @param string $secret         oauth token secret
 		 */
-			public Client (string consumerKey, string consumerSecret = null, string token = null, string secret = null) {
+			public Client (string consumerKey, string consumerSecret = "", string token = "", string secret = "") {
 				this.requestHandler = new RequestHandler();
 				this.setConsumer(consumerKey, consumerSecret);
 
-				if (token != null && secret != null) {
+				if (token != "" && secret != "") {
 					this.setToken(token,secret);
 				}
 		}
@@ -82,7 +82,7 @@ namespace TumblrAPI {
 		 * @return array the response array
 		 */
 		public HashMap<string, string> getUserInfo () {
-			return this.getRequest("v2/user/info", null, false);
+			return this.getRequest("v2/user/info", new HashMap<string, string>(), false);
 		}
 
 		/**
@@ -91,7 +91,7 @@ namespace TumblrAPI {
 		 * @param  array $options the options for the call
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getDashboardPosts (HashMap<string, string> options = null) {
+		public HashMap<string, string> getDashboardPosts (HashMap<string, string> options = new HashMap<string, string>()) {
 			return this.getRequest("v2/user/dashboard", options, false);
 		}
 
@@ -101,7 +101,7 @@ namespace TumblrAPI {
 		 * @param  array $options the options for the call
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getFollowedBlogs (HashMap<string, string> options = null) {
+		public HashMap<string, string> getFollowedBlogs (HashMap<string, string> options = new HashMap<string, string>()) {
 			return this.getRequest("v2/user/following", options, false);
 		}
 
@@ -111,7 +111,7 @@ namespace TumblrAPI {
 		 * @param  array $options the options for the call
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getLikedPosts (HashMap<string, string> options = null) {
+		public HashMap<string, string> getLikedPosts (HashMap<string, string> options = new HashMap<string, string>()) {
 			return this.getRequest("v2/user/likes", options, false);
 		}
 
@@ -125,9 +125,6 @@ namespace TumblrAPI {
 			HashMap<string, string> options = new HashMap<string, string>();
 			options["url"] = this.blogUrl(blogName);
 			
-			//Array options = new Array();
-			//options["url"] = this.blogUrl(blogName);
-			
 			return this.postRequest("v2/user/follow", options, false);
 		}
 
@@ -139,7 +136,7 @@ namespace TumblrAPI {
 		 */
 		public HashMap<string, string> unfollow (string blogName) {
 			HashMap<string, string> options = new HashMap<string, string>();
-			//options["url"] = this.blogUrl(blogName);
+			options["url"] = this.blogUrl(blogName);
 			
 			return this.postRequest("v2/user/unfollow", options, false);
 		}
@@ -154,8 +151,8 @@ namespace TumblrAPI {
 		 */
 		public HashMap<string, string> like (int postId, string reblogKey) {
 			HashMap<string, string> options = new HashMap<string, string>();
-			//options["id"] = postId;
-			//options["reblogKey"] = reblogKey;
+			options["id"] = postId.to_string();
+			options["reblogKey"] = reblogKey;
 
 			return this.postRequest("v2/user/like", options, false);
 		}
@@ -170,8 +167,8 @@ namespace TumblrAPI {
 		 */
 		public HashMap<string, string> unlike (int postId, string reblogKey) {
 			HashMap<string, string> options = new HashMap<string, string>();
-			//options["id"] = postId;
-			//options["reblogKey"] = reblogKey;
+			options["id"] = postId.to_string();
+			options["reblogKey"] = reblogKey;
 
 			return this.postRequest("v2/user/unlike", options, false);
 		}
@@ -187,8 +184,8 @@ namespace TumblrAPI {
 		 */
 		public HashMap<string, string> deletePost (string blogName, int postId, string reblogKey) {
 			HashMap<string, string> options = new HashMap<string, string>();
-			//options["id"] = postId;
-			//options["reblogKey"] = reblogKey;
+			options["id"] = postId.to_string();
+			options["reblogKey"] = reblogKey;
 
 			string path = this.blogPath(blogName, "/post/delete");
 
@@ -205,14 +202,14 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> reblogPost (string blogName, int postId, string reblogKey, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			//var params = new Array();
-			//params["id"] = postId;
-			//params["reblogKey"] = reblogKey;
+		public HashMap<string, string> reblogPost (string blogName, int postId, string reblogKey, HashMap<string, string> options = new HashMap<string, string>()) {
+			HashMap<string, string> params = options;
+			params["id"] = postId.to_string();
+			params["reblogKey"] = reblogKey;
 			
+			string path = this.blogPath(blogName, "/post/reblog");
 			
-			return new HashMap<string, string>();
+			return this.postRequest(path, params, false);
 		}
 
 		/**
@@ -225,8 +222,10 @@ namespace TumblrAPI {
 		 * @return array the response array
 		 */
 		public HashMap<string, string> editPost (string blogName, int postId, HashMap<string, string> data) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+			data["id"] = postId.to_string();
+			string path = this.blogPath(blogName, "/post/edit");
+			
+			return this.postRequest(path, data, false);
 		}
 
 		/**
@@ -238,8 +237,9 @@ namespace TumblrAPI {
 		 * @return array the response array
 		 */
 		public HashMap<string, string> createPost (string blogName, HashMap<string, string> data) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+			string path = this.blogPath(blogName, "/post");
+			
+			return this.postRequest(path, data, false);
 		}
 
 		/**
@@ -250,9 +250,10 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getTaggedPosts (string tag, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		public HashMap<string, string> getTaggedPosts (string tag, HashMap<string, string> options = new HashMap<string, string>()) {
+			options["tag"] = tag;
+			
+			return this.getRequest("v2/tagged", options, true);
 		}
 
 		/**
@@ -262,8 +263,9 @@ namespace TumblrAPI {
 		 * @return array  the response array
 		 */
 		public HashMap<string, string> getBlogInfo (string blogName) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+			string path = this.blogPath(blogName, "/info");
+			
+			return this.getRequest(path, new HashMap<string, string>(), true);
 		}
 
 		/**
@@ -274,9 +276,13 @@ namespace TumblrAPI {
 		 *
 		 * @return string the avatar url
 		 */
-		public string getBlogAvatar (string blogName, int size = null) {
-			// TODO: Add implementation here.
-			return "";
+		public string getBlogAvatar (string blogName, int size = 0) {
+			string path = this.blogPath(blogName, "/avatar");
+			if (size != 0) {
+			  path += "/" + size.to_string();
+			}
+			
+			return this.getRedirect(path, new HashMap<string, string>(), true);
 		}
 
 		/**
@@ -287,9 +293,9 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getBlogLikes (string blogName, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		public HashMap<string, string> getBlogLikes (string blogName, HashMap<string, string> options = new HashMap<string, string>()) {
+			string path = this.blogPath(blogName, "/likes");
+			return this.getRequest(path, options, true);
 		}
 
 		/**
@@ -300,9 +306,10 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getBlogFollowers (string blogName, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		public HashMap<string, string> getBlogFollowers (string blogName, HashMap<string, string> options = new HashMap<string, string>()) {
+			string path = this.blogPath(blogName, "/followers");
+			
+			return this.getRequest(path, options, false);
 		}
 
 		/**
@@ -313,9 +320,14 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getBlogPosts (string blogName, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		public HashMap<string, string> getBlogPosts (string blogName, HashMap<string, string> options = new HashMap<string, string>()) {
+			string path = this.blogPath(blogName, "/posts");
+			if (options.has_key("type")) {
+			  path += "/" + options["type"];
+			  options.unset("type");
+			}
+			
+			return this.getRequest(path, options, true);
 		}
 
 		/**
@@ -326,9 +338,10 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getQueuedPosts (string blogName, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		public HashMap<string, string> getQueuedPosts (string blogName, HashMap<string, string> options = new HashMap<string, string>()) {
+			string path = this.blogPath(blogName, "/posts/queue");
+			
+			return this.getRequest(path, options, false);
 		}
 
 		/**
@@ -339,9 +352,10 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getDraftPosts (string blogName, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		public HashMap<string, string> getDraftPosts (string blogName, HashMap<string, string> options = new HashMap<string, string>()) {
+			string path = this.blogPath(blogName, "/posts/draft");
+			
+			return this.getRequest(path, options, false);
 		}
 
 		/**
@@ -352,9 +366,10 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response array
 		 */
-		public HashMap<string, string> getSubmissionPosts (string blogName, HashMap<string, string> options = null) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		public HashMap<string, string> getSubmissionPosts (string blogName, HashMap<string, string> options = new HashMap<string, string>()) {
+			string path = this.blogPath(blogName, "/posts/submission");
+			
+			return this.getRequest(path, options, false);
 		}
 
 		/**
@@ -366,9 +381,10 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response object (parsed)
 		 */
-		private HashMap<string, string> getRequest (string path, HashMap<string, string> options = null, bool addApiKey) {
-			// TODO: Add implementation here.
-			return new HashMap<string, string>();
+		private HashMap<string, string> getRequest (string path, HashMap<string, string> options = new HashMap<string, string>(), bool addApiKey) {
+      var response = this.makeRequest("GET", path, options, addApiKey);
+      
+			return this.parseResponse(response);
 		}
 
 		/**
@@ -380,7 +396,7 @@ namespace TumblrAPI {
 		 *
 		 * @return array the response object (parsed)
 		 */
-		private HashMap<string, string> postRequest (string path, HashMap<string, string> options = null, bool addApiKey) {
+		private HashMap<string, string> postRequest (string path, HashMap<string, string> options = new HashMap<string, string>(), bool addApiKey) {
 			// TODO: Add implementation here.
 			return new HashMap<string, string>();
 		}
@@ -407,7 +423,7 @@ namespace TumblrAPI {
 		 *
 		 * @return string url redirected to (or null)
 		 */
-		private string getRedirect (string path, HashMap<string, string> options = null, bool addApiKey) {
+		private string getRedirect (string path, HashMap<string, string> options = new HashMap<string, string>(), bool addApiKey) {
 			// TODO: Add implementation here.
 			return "";
 		}
@@ -422,7 +438,7 @@ namespace TumblrAPI {
 		 *
 		 * @return GLib.Object the response object (not parsed)
 		 */
-		private GLib.Object makeRequest (string method, string path, HashMap<string, string> options = null, bool addApiKey) {
+		private GLib.Object makeRequest (string method, string path, HashMap<string, string> options = new HashMap<string, string>(), bool addApiKey) {
 			// TODO: Add implementation here.
 			return new GLib.Object();
 		}
@@ -436,8 +452,9 @@ namespace TumblrAPI {
 		 * @return string the blog base path
 		 */
 		private string blogPath (string blogName, string ext) {
-			// TODO: Add implementation here.
-			return "";
+			string blogUrl = this.blogUrl(blogName);
+			
+			return "v2/blog/" + blogUrl + ext;
 		}
 
 		/**
@@ -447,8 +464,11 @@ namespace TumblrAPI {
 		 * @return string the blog URL
 		 */
 		private string blogUrl (string blogName) {
-			// TODO: Add implementation here.
-			return "";
+			if (!blogName.contains(".")) {
+			  return blogName + ".tumblr.com";
+			}
+			
+			return blogName;
 		}
 	}
 }
