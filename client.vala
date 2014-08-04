@@ -279,7 +279,7 @@ namespace TumblrAPI {
 		public string getBlogAvatar (string blogName, int size = 0) {
 			string path = this.blogPath(blogName, "/avatar");
 			if (size != 0) {
-			  path += "/" + size.to_string();
+				path += "/" + size.to_string();
 			}
 			
 			return this.getRedirect(path, new HashMap<string, string>(), true);
@@ -323,8 +323,8 @@ namespace TumblrAPI {
 		public HashMap<string, string> getBlogPosts (string blogName, HashMap<string, string> options = new HashMap<string, string>()) {
 			string path = this.blogPath(blogName, "/posts");
 			if (options.has_key("type")) {
-			  path += "/" + options["type"];
-			  options.unset("type");
+				path += "/" + options["type"];
+				options.unset("type");
 			}
 			
 			return this.getRequest(path, options, true);
@@ -382,7 +382,7 @@ namespace TumblrAPI {
 		 * @return array the response object (parsed)
 		 */
 		private HashMap<string, string> getRequest (string path, HashMap<string, string> options = new HashMap<string, string>(), bool addApiKey) {
-      var response = this.makeRequest("GET", path, options, addApiKey);
+			var response = this.makeRequest("GET", path, options, addApiKey);
       
 			return this.parseResponse(response);
 		}
@@ -465,7 +465,7 @@ namespace TumblrAPI {
 		 */
 		private string blogUrl (string blogName) {
 			if (!blogName.contains(".")) {
-			  return blogName + ".tumblr.com";
+				return blogName + ".tumblr.com";
 			}
 			
 			return blogName;
